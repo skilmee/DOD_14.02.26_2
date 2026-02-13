@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Крипто-кот</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous">
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        :root{
+            /* Disney-ish night alley palette (аккуратно) */
+            --sky0: #07122b;
+            --sky1: #0b1e45;
+            --sky2: #132a58;
+
+            --alley0: rgba(18, 10, 18, 0.35);
+            --alley1: rgba(32, 16, 22, 0.45);
+
+            --moon: rgba(255, 246, 214, 0.18);
+            --pink: rgba(255, 154, 190, 0.18);
+            --warm: rgba(255, 202, 120, 0.16);
+
+            --glass: rgba(10, 18, 44, 0.62);
+            --glass2: rgba(12, 16, 32, 0.72);
+            --stroke: rgba(255, 255, 255, 0.14);
+
+            --text: #ffffff;
+            --muted: rgba(255,255,255,0.82);
+
+            --accent: #ff77a8;
+            --accent2:#ffd08a;
+
+            --btnText: #0b1327;
+
+            --shadow: rgba(0,0,0,0.55);
+            --glow: rgba(255, 182, 205, 0.18);
+        }
+
+        html, body { height: 100%; margin: 0; padding: 0; }
+
+        body{
+            /* Небо + мягкий “фонарь” переулка + тёплые отблески */
+            background:
+                radial-gradient(900px 520px at 22% 18%, var(--moon), transparent 62%),
+                radial-gradient(700px 460px at 78% 22%, var(--pink), transparent 60%),
+                radial-gradient(900px 520px at 55% 105%, var(--warm), transparent 70%),
+                radial-gradient(900px 560px at 50% 85%, var(--alley0), transparent 65%),
+                radial-gradient(circle at top, var(--sky2) 0, var(--sky1) 38%, var(--sky0) 78%);
+            min-height: 100vh;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Звёздная ночь (тонко) */
+        body::before{
+            content:"";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.75;
+            background-image:
+                radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,0.55) 40%, transparent 42%),
+                radial-gradient(1.8px 1.8px at 28% 46%, rgba(255,255,255,0.35) 40%, transparent 42%),
+                radial-gradient(1.6px 1.6px at 62% 22%, rgba(255,255,255,0.42) 40%, transparent 42%),
+                radial-gradient(1.4px 1.4px at 78% 55%, rgba(255,255,255,0.30) 40%, transparent 42%),
+                radial-gradient(1.6px 1.6px at 90% 30%, rgba(255,255,255,0.35) 40%, transparent 42%),
+                radial-gradient(1.2px 1.2px at 45% 78%, rgba(255,255,255,0.25) 40%, transparent 42%),
+                radial-gradient(1.4px 1.4px at 15% 85%, rgba(255,255,255,0.22) 40%, transparent 42%),
+                radial-gradient(1.2px 1.2px at 70% 80%, rgba(255,255,255,0.18) 40%, transparent 42%);
+            filter: blur(0.1px);
+        }
+
+        /* Мягкий “дымок/туман” переулка */
+        body::after{
+            content:"";
+            position: fixed;
+            inset: -40px;
+            pointer-events: none;
+            z-index: 1;
+            background:
+                radial-gradient(700px 420px at 10% 70%, rgba(255,255,255,0.06), transparent 68%),
+                radial-gradient(780px 520px at 92% 82%, rgba(255,255,255,0.05), transparent 70%),
+                linear-gradient(180deg, transparent 0%, rgba(10,14,28,0.28) 80%, rgba(10,14,28,0.36) 100%);
+            filter: blur(10px);
+            opacity: 0.95;
+        }
+
+        main{
+            flex: 1 0 auto;
+            position: relative;
+            z-index: 2;
+            padding-top: 44px;
+            padding-bottom: 44px;
+        }
+
+        footer{
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .container{ max-width: 960px; }
+
+        .navbar-brand span{
+            font-weight: 900;
+            letter-spacing: 0.2px;
+        }
+
+        /* Карточки — “мультяшное стекло” + лёгкое свечение */
+        .card-glass{
+            background: linear-gradient(180deg, var(--glass), var(--glass2));
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 1.7rem;
+            backdrop-filter: blur(10px);
+            box-shadow:
+                0 24px 55px rgba(0,0,0,0.55),
+                0 0 0 1px rgba(255,255,255,0.06) inset,
+                0 0 40px var(--glow);
+            transition: transform 220ms ease, box-shadow 220ms ease;
+        }
+        .card-glass:hover{
+            transform: translateY(-2px);
+            box-shadow:
+                0 30px 70px rgba(0,0,0,0.58),
+                0 0 0 1px rgba(255,255,255,0.07) inset,
+                0 0 55px rgba(255, 182, 205, 0.22);
+        }
+
+        .badge-soft{
+            background: rgba(255, 154, 190, 0.18);
+            color: rgba(255,255,255,0.92);
+            border: 1px solid rgba(255, 154, 190, 0.38);
+            font-weight: 600;
+        }
+
+        .crypto-highlight{
+            color: #ffd08a;
+            text-shadow: 0 10px 30px rgba(255, 208, 138, 0.18);
+        }
+
+        /* Кнопки */
+        .btn-crypto{
+            background: linear-gradient(135deg, #ffd08a, #ff77a8);
+            border: none;
+            color: var(--btnText);
+            font-weight: 800;
+            box-shadow: 0 16px 34px rgba(255, 154, 190, 0.18);
+        }
+        .btn-crypto:hover{
+            background: linear-gradient(135deg, #ff77a8, #ffd08a);
+            color: #0b1327;
+        }
+
+        .btn-outline-crypto{
+            border-color: rgba(255, 208, 138, 0.75);
+            color: rgba(255,255,255,0.92);
+        }
+        .btn-outline-crypto:hover{
+            background: rgba(255, 208, 138, 0.18);
+            border-color: rgba(255, 208, 138, 0.95);
+            color: #ffffff;
+        }
+
+        /* Текст */
+        /* Текст по умолчанию — белый */
+body, p, li, label, .form-label,
+.navbar-nav .nav-link, .card-glass,
+.text-slate-300, .text-slate-400{
+    color: var(--text);
+}
+
+/* Светлый alert — чёрный текст */
+.alert-light{
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+.alert-light *,
+.alert-light .fw-semibold,
+.alert-light .small{
+    color: #000000 !important;
+}
+
+/* Остальные алерты остаются светлыми */
+.alert-success,
+.alert-info,
+.alert-warning,
+.alert-danger{
+    color: #ffffff;
+}
+
+.text-slate-300{
+    color: var(--muted);
+}
+.text-slate-400{
+    color: var(--muted);
+}
+
+        h1,h2,h3,h4,h5,h6{ color: #ffffff !important; }
+
+        /* Поля */
+        .form-control{
+            background-color: rgba(8, 14, 30, 0.62);
+            border-color: rgba(255,255,255,0.20);
+            color: #fff;
+        }
+        .form-control:focus{
+            background-color: rgba(8, 14, 30, 0.72);
+            border-color: rgba(255, 208, 138, 0.85);
+            box-shadow: 0 0 0 0.15rem rgba(255, 154, 190, 0.22);
+            color: #fff;
+        }
+        .form-control::placeholder{
+            color: rgba(255,255,255,0.55);
+        }
+
+        /* Алерты */
+        .alert-success{
+            background-color: rgba(34, 197, 94, 0.18);
+            border-color: rgba(34, 197, 94, 0.55);
+            color: #ecfdf5;
+        }
+        .alert-info{
+            background-color: rgba(255, 154, 190, 0.18);
+            border-color: rgba(255, 154, 190, 0.45);
+            color: rgba(255,255,255,0.95);
+        }
+        .alert-warning{
+            background-color: rgba(234, 179, 8, 0.18);
+            border-color: rgba(234, 179, 8, 0.55);
+            color: #fff7d6;
+        }
+        .alert-danger{
+            background-color: rgba(248, 113, 113, 0.18);
+            border-color: rgba(248, 113, 113, 0.55);
+            color: #ffe3e3;
+        }
+
+        /* Navbar + footer в стиле ночного переулка */
+        .navbar{
+            background: rgba(8, 12, 26, 0.68) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+            backdrop-filter: blur(10px);
+        }
+        footer{
+            background: rgba(8, 12, 26, 0.58) !important;
+            border-top: 1px solid rgba(255,255,255,0.10) !important;
+        }
+
+        /* Крипто-кот */
+        .crypto-cat{
+            position: fixed;
+            left: 34px;
+            bottom: 46px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .crypto-cat img{
+            max-width: 320px;
+            height: auto;
+            filter: drop-shadow(0 18px 35px rgba(0,0,0,0.65));
+            opacity: 0.97;
+        }
+        @media (max-width: 768px){
+            .crypto-cat{ display:none; }
+        }
+
+        /* Сердечки-искры (очень аккуратно) */
+        .float-hearts{
+            position: fixed;
+            inset: 0;
+            z-index: 1; /* под контентом, над фоном */
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .float-hearts span{
+            position: absolute;
+            bottom: -40px;
+            left: var(--x, 50%);
+            font-size: var(--s, 14px);
+            opacity: var(--o, 0.35);
+            filter: drop-shadow(0 8px 18px rgba(255,154,190,0.18));
+            animation: rise var(--t, 12s) linear infinite;
+            transform: translateX(0);
+        }
+        @keyframes rise{
+            0%   { transform: translateX(0) translateY(0) scale(1); opacity: 0; }
+            8%   { opacity: var(--o, 0.35); }
+            65%  { opacity: var(--o, 0.35); }
+            100% { transform: translateX(var(--dx, 30px)) translateY(-110vh) scale(1.18); opacity: 0; }
+        }
+
+        /* уменьшить анимацию, если пользователь просит */
+        @media (prefers-reduced-motion: reduce){
+            .float-hearts{ display:none; }
+            .card-glass{ transition:none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- очень лёгкая анимация сердечек (можно убрать, если не захочешь) -->
+<div class="float-hearts" aria-hidden="true">
+  <span style="--x:12%; --s:14px; --o:0.22; --t:14s; --dx:-22px;">♥</span>
+  <span style="--x:24%; --s:12px; --o:0.18; --t:16s; --dx:18px;">♥</span>
+  <span style="--x:36%; --s:16px; --o:0.20; --t:13s; --dx:-12px;">♥</span>
+  <span style="--x:52%; --s:13px; --o:0.16; --t:18s; --dx:26px;">♥</span>
+  <span style="--x:66%; --s:15px; --o:0.20; --t:15s; --dx:-18px;">♥</span>
+  <span style="--x:78%; --s:12px; --o:0.16; --t:19s; --dx:14px;">♥</span>
+  <span style="--x:90%; --s:14px; --o:0.18; --t:17s; --dx:-10px;">♥</span>
+</div>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="position: relative; z-index: 3;">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+      <i class="bi bi-moon-stars-fill" style="color: #ffd08a;"></i>
+      <span>Крипто-кот</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        {% if session.get('nick') %}
+        <li class="nav-item me-3">
+          <span class="nav-link disabled">
+            <i class="bi bi-person-circle me-1"></i>{{ session.get('nick') }}
+          </span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('reset') }}">
+            <i class="bi bi-arrow-clockwise me-1"></i>Начать заново
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="mb-3">
+          {% for category, message in messages %}
+            {% set bs = 'info' %}
+            {% if category in ['success', 'danger', 'warning', 'info'] %}
+              {% set bs = category %}
+            {% endif %}
+            <div class="alert alert-{{ bs }} alert-dismissible fade show shadow-sm" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="py-3 mt-4">
+  <div class="container text-center small">
+    Сделано с шифрами, звёздной ночью и мурчанием от крипто-кота ✨🐾
+  </div>
+</footer>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+  crossorigin="anonymous"></script>
+</body>
+</html>

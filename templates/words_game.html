@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center g-4">
+  <div class="col-lg-10">
+    <div class="card card-glass rounded-4 p-4 p-md-5">
+
+      <div class="row g-4 align-items-start">
+        {% if not finished %}
+        <!-- Левая колонка: письмо + зашифрованная фраза -->
+        <div class="col-md-5">
+          <div class="card card-glass rounded-4 p-3 h-100">
+            <img src="{{ url_for('static', filename='letter_bg.png') }}"
+                 alt="Зашифрованная записка"
+                 class="w-100 rounded-4 mb-2"
+                 style="display:block; max-height:420px; object-fit:cover; object-position:center;">
+            <p class="small mb-2">
+              Крипто-кот оставил Бродяге подсказку ко Дню всех влюблённых 💌
+              Но записка зашифрована — без тебя её не прочитать.
+            </p>
+            <p class="small mb-2">
+              Здесь используется шифр Цезаря:
+              зашифровка сделана со <strong>сдвигом +3</strong>.
+              Чтобы прочитать — двигайся на три буквы <strong>НАЗАД</strong>.
+            </p>
+            {% if cipher %}
+              <div class="small">
+                <span class="fw-semibold">Зашифрованная фраза:</span><br>
+                {{ cipher }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Правая колонка -->
+        <div class="{% if not finished %}col-md-7{% else %}col-12{% endif %}">
+          {% if not finished and step == 0 %}
+            <h2 class="h5 mb-3">
+              🐱💌 Как читать записку (сдвиг −3)
+            </h2>
+            <p class="mb-3">
+              {{ example_explain }}
+            </p>
+
+            <div class="card card-glass rounded-4 p-3 mb-3 text-center">
+              <p class="small mb-2 fw-semibold">
+                Алфавит-подсказка от Крипто-кота:
+              </p>
+              <img src="{{ url_for('static', filename='alphabet.png') }}"
+                   alt="Русский алфавит с номерами букв"
+                   class="w-100 rounded-3"
+                   style="max-height:260px; object-fit:contain; object-position:center;">
+              <p class="small mt-2 mb-0 text-start">
+                Пример: если зашифровали со сдвигом <strong>+3</strong>,
+                то при расшифровке мы двигаемся на <strong>3 буквы назад</strong>.
+                Так текст снова становится понятным 🔐
+              </p>
+            </div>
+
+            <form method="post" action="{{ url_for('submit_word') }}">
+              <button type="submit" class="btn btn-crypto w-100">
+                Понятно! Хочу расшифровать записку
+              </button>
+            </form>
+
+          {% elif not finished and step == 1 %}
+            <h2 class="h5 mb-3">
+              🔐 Расшифруй записку (сдвиг −3)
+            </h2>
+            <p class="mb-3">
+              Каждая буква в послании сдвинута на <strong>+3</strong>.
+              Чтобы восстановить исходный текст, двигай каждую букву на три позиции <strong>НАЗАД</strong>.
+              Расшифруй — и Бродяга получит важную подсказку для следующего шага 💘 Пример расшифровки (сдвиг -3): НСХ - КОТ
+            </p>
+
+            <div class="card card-glass rounded-4 p-3 mb-3 text-center">
+              <p class="small mb-2 fw-semibold">
+                Алфавит-подсказка:
+              </p>
+              <img src="{{ url_for('static', filename='alphabet.png') }}"
+                   alt="Русский алфавит с номерами букв"
+                   class="w-100 rounded-3"
+                   style="max-height:260px; object-fit:contain; object-position:center;">
+            </div>
+
+            <form method="post" action="{{ url_for('submit_word') }}" class="mb-3">
+              <div class="mb-3">
+                <label class="form-label">Введи расшифрованную фразу полностью</label>
+                <textarea name="phrase" rows="4" class="form-control"
+                          placeholder="Например: Иногда..."
+                          required></textarea>
+              </div>
+              <button type="submit" class="btn btn-crypto w-100">
+                Проверить фразу
+              </button>
+            </form>
+
+            <div class="d-flex justify-content-end align-items-center mt-2">
+              <span class="small">
+                Подсказка: расшифруй 2–3 первых слова — дальше будет легче догадаться по смыслу ✨
+              </span>
+            </div>
+
+          {% else %}
+            <h2 class="h4 fw-semibold mb-3">
+              Записка расшифрована! 💘
+            </h2>
+            <p class="mb-3">
+              Браво! 💞 Благодаря тебе Леди и Бродяга нашли друг друга.
+                Тайное послание разгадано — а значит, пора за сладким призом! 🍫✨
+            </p>
+
+            <div class="card card-glass rounded-4 p-3 mb-3">
+              <div class="small fw-semibold mb-2">Текст записки:</div>
+              <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.06);">
+                {{ plain }}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-center my-3">
+              <img src="{{ url_for('static', filename='kiss_final.png') }}"
+                   alt="Счастливый финал"
+                   class="rounded-4"
+                   style="max-width:520px; width:100%; object-fit:cover;">
+            </div>
+
+            <p class="mb-4 text-center">
+              С Днём всех влюблённых! Пусть в твоей истории всегда находится «ключ» к сердцу ❤️🔐
+            </p>
+
+            <a href="{{ url_for('reset') }}" class="btn btn-outline-crypto w-100">
+              <i class="bi bi-arrow-repeat me-1"></i> Начать заново
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

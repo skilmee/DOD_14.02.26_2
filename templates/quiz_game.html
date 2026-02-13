@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center g-4">
+  <div class="col-lg-9">
+    <div class="card card-glass rounded-4 p-4 p-md-5">
+
+      {% if not finished %}
+        <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+          <span class="badge badge-soft">
+            Испытание {{ task_num }} из {{ total_tasks }} 🐱🔐
+          </span>
+          <span class="small">
+            Набери <b>8+</b> правильных ответов — и Крипто-кот откроет путь к финалу 💘
+          </span>
+        </div>
+
+        <div class="progress mb-3" style="height: 8px;">
+          <div class="progress-bar bg-info" style="width: {{ progress }}%;"></div>
+        </div>
+
+        <div class="row g-4 align-items-center">
+          <div class="col-md-5">
+            <div class="card card-glass rounded-4 p-3 h-100">
+              <img src="{{ url_for('static', filename=image_empty) }}"
+                   alt="Испытания Крипто-кота"
+                   class="w-100 rounded-4 mb-2"
+                   style="display:block; max-height:420px; object-fit:cover; object-position:center;">
+              <p class="small mb-0">
+                Каждый верный ответ — ещё один шаг для Бродяги к встрече 💘🐾
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-7">
+            <h2 class="h5 mb-3">
+              🐱🔐 Испытания Крипто-кота
+            </h2>
+            <p class="mb-3">
+              {{ task.explain }}
+            </p>
+            <p class="mb-3">
+              <strong>{{ task.vraag }}</strong>
+            </p>
+
+            <form method="post" action="{{ url_for('submit_quiz') }}">
+              <div class="d-grid gap-2 mb-3">
+                {% for option in task.options %}
+                  <button
+                    type="submit"
+                    name="answer"
+                    value="{{ option }}"
+                    class="btn btn-outline-crypto text-start">
+                    {{ option }}
+                  </button>
+                {% endfor %}
+              </div>
+            </form>
+
+            <div class="d-flex justify-content-end align-items-center mt-2">
+              <span class="small">
+                После выбора появится объяснение — подсказка от Крипто-кота ✨
+              </span>
+            </div>
+          </div>
+        </div>
+
+      {% else %}
+        <div class="row g-4 align-items-center">
+          <div class="col-md-5">
+            <div class="card card-glass rounded-4 p-3 h-100">
+              {% if full_tree %}
+                <img src="{{ url_for('static', filename=image_full) }}"
+                     alt="Финал открыт"
+                     class="w-100 rounded-4 mb-2"
+                     style="display:block; max-height:420px; object-fit:cover; object-position:center;">
+              {% else %}
+                <img src="{{ url_for('static', filename=image_empty) }}"
+                     alt="Путь продолжается"
+                     class="w-100 rounded-4 mb-2"
+                     style="display:block; max-height:420px; object-fit:cover; object-position:center;">
+              {% endif %}
+              <p class="small mb-0">
+                {% if full_tree %}
+
+                {% else %}
+                  Крипто-кот подмигнул: «Попробуем ещё раз? У тебя получится!» ✨
+                {% endif %}
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-7">
+            <h2 class="h4 fw-semibold mb-3">
+              Итоги испытаний
+            </h2>
+            <p class="mb-3">
+              Ты набрал(а) <b>{{ score }}</b> из <b>{{ total }}</b> правильных ответов.
+            </p>
+
+            {% if full_tree %}
+              <p class="mb-3">
+                Ура! Ты справился(ась) с заданиями Крипто-кота — и благодаря тебе Бродяга и Леди проводят этот особенный день вместе💘🐾
+              </p>
+
+            {% else %}
+              <p class="mb-3">
+                Чуть-чуть не хватило до открытия финала. Ничего страшного —
+                теперь ты знаешь больше про шифры, ключи и хэши 🐱🔐
+              </p>
+            {% endif %}
+
+            <a href="{{ url_for('reset') }}" class="btn btn-outline-crypto w-100">
+              <i class="bi bi-arrow-repeat me-1"></i> Начать заново
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

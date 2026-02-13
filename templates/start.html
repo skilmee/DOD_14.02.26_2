@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card card-glass rounded-4 p-4 p-md-5">
+      <h2 class="h4 fw-semibold mb-3">
+        Привет! С Днём всех влюблённых ❤️🐱
+      </h2>
+
+      <p class="mb-3 text-slate-300">
+        Крипто-кот подготовил квест ко Дню всех влюблённых:
+        Бродяга мечтает встретить свою вторую половинку, но путь к встрече закрыт шифрами.
+        Впиши имя или ник — так Крипто-кот будет обращаться к тебе во время испытаний 💘
+      </p>
+
+      <form method="post" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Имя / ник</label>
+          <input type="text" name="nick" class="form-control"
+                 placeholder="Например: Миша" required>
+        </div>
+
+        <button type="submit" class="btn btn-crypto w-100">
+          <i class="bi bi-play-fill me-1"></i>
+          Начать квест
+        </button>
+      </form>
+
+      <a href="{{ url_for('index') }}" class="btn btn-outline-crypto w-100 mt-3">
+        <i class="bi bi-arrow-left me-1"></i> Вернуться на главную
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
